@@ -508,52 +508,19 @@ function grantShareReward(){
   }
 }
 
+/* ── 목업(시연용): 실제 외부 공유 없이 "공유한 것처럼"만 동작 ──
+   - 외부 창 열기, 클립보드 복사, OS 공유 시트 모두 사용하지 않음
+   - 버튼을 누르면 안내 토스트 + 포인트/쿠폰/미션 보상만 처리 */
+const SHARE_LABELS = {
+  kakao:"카카오톡으로 공유했어요! (시연용)",
+  x:"X에 공유했어요! (시연용)",
+  insta:"인스타그램에 공유했어요! (시연용)",
+  fb:"페이스북에 공유했어요! (시연용)",
+  link:"링크를 복사했어요! (시연용)"
+};
 function doShare(type){
-  const url=encodeURIComponent(pageURL());
-  const text=encodeURIComponent(shareText());
-  let link=null;
-  if(type==="x"){ link=`https://twitter.com/intent/tweet?text=${text}&url=${url}`; }
-  else if(type==="fb"){ link=`https://www.facebook.com/sharer/sharer.php?u=${url}`; }
-  else if(type==="kakao"){
-    // 카카오 SDK 키 연동 전이므로 링크 복사로 대체 (배포 시 Kakao.Share.sendDefault 로 교체)
-    copyLink("카카오톡 공유용 링크가 복사됐어요. 붙여넣어 보내세요!");
-    grantShareReward();
-    return;
-  }
-  else if(type==="insta"){
-    // 인스타는 웹 직접 공유 API가 없어 링크 복사 안내
-    copyLink("인스타 스토리/DM에 붙여넣을 링크가 복사됐어요!");
-    grantShareReward();
-    return;
-  }
-  else if(type==="link"){
-    copyLink("링크가 복사됐어요!");
-    grantShareReward();
-    return;
-  }
-
-  // 네이티브 공유가 가능하면 우선 사용
-  if(navigator.share && (type==="x"||type==="fb")){
-    navigator.share({title:"쏘카 이동 동물 테스트", text:shareText(), url:pageURL()})
-      .then(()=>grantShareReward()).catch(()=>{ window.open(link,"_blank"); grantShareReward(); });
-  } else {
-    window.open(link,"_blank","noopener");
-    grantShareReward();
-  }
-}
-function copyLink(msg){
-  const full = pageURL();
-  const payload = shareText()+" "+full;
-  if(navigator.clipboard && navigator.clipboard.writeText){
-    navigator.clipboard.writeText(payload).then(()=>toast(msg)).catch(()=>fallbackCopy(payload,msg));
-  } else fallbackCopy(payload,msg);
-}
-function fallbackCopy(txt,msg){
-  const ta=document.createElement("textarea"); ta.value=txt;
-  ta.style.position="fixed"; ta.style.opacity="0"; document.body.appendChild(ta);
-  ta.select();
-  try{ document.execCommand("copy"); toast(msg); }catch(e){ toast("복사에 실패했어요. 링크를 직접 복사해 주세요."); }
-  document.body.removeChild(ta);
+  toast(SHARE_LABELS[type] || "공유했어요! (시연용)");
+  grantShareReward();
 }
 
 /* ---------- 초기화 / 이벤트 ---------- */
