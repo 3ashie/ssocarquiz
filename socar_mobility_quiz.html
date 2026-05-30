@@ -4,637 +4,583 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>나의 이동 동물 찾기 — 쏘카</title>
-<link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --socar: #00BBF0;
-    --socar-dark: #0099CC;
-    --ink: #111;
-    --muted: #666;
-    --light: #f5f5f0;
-    --border: #e0e0d8;
-    --white: #fff;
-    --radius: 16px;
+  :root{
+    --ink:#0b1f3a;
+    --paper:#f4f1ea;
+    --paper-2:#ebe6da;
+    --socar:#00b2ff;
+    --socar-deep:#0085d6;
+    --accent:#ff6a3d;
+    --gold:#e8a33d;
+    --muted:#5a6b80;
+    --line:rgba(11,31,58,.12);
+    --card:#fffdf8;
+    --shadow:0 18px 40px -22px rgba(11,31,58,.5);
   }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    font-family:"Pretendard","Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+    background:
+      radial-gradient(120% 80% at 80% -10%, rgba(0,178,255,.18), transparent 60%),
+      radial-gradient(100% 70% at 0% 110%, rgba(255,106,61,.14), transparent 55%),
+      var(--paper);
+    color:var(--ink);
+    -webkit-font-smoothing:antialiased;
+    min-height:100dvh;
+    display:flex;
+    flex-direction:column;
+  }
+  .wrap{
+    width:100%;
+    max-width:520px;
+    margin:0 auto;
+    padding:22px 20px 40px;
+    flex:1;
+    display:flex;
+    flex-direction:column;
+  }
+  /* top bar */
+  .topbar{
+    display:flex;align-items:center;justify-content:space-between;
+    margin-bottom:18px;
+  }
+  .brand{
+    font-weight:800;letter-spacing:-.02em;font-size:15px;
+    display:flex;align-items:center;gap:8px;
+  }
+  .brand .dot{width:10px;height:10px;border-radius:50%;background:var(--socar);box-shadow:0 0 0 4px rgba(0,178,255,.18)}
+  .points-pill{
+    display:inline-flex;align-items:center;gap:7px;
+    background:var(--ink);color:#fff;border-radius:999px;
+    padding:7px 13px;font-weight:700;font-size:13px;
+    box-shadow:var(--shadow);
+  }
+  .points-pill b{color:var(--socar)}
+  /* card */
+  .card{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:26px;
+    padding:30px 24px;
+    box-shadow:var(--shadow);
+    flex:1;
+    display:flex;
+    flex-direction:column;
+  }
+  .screen{display:none;flex:1;flex-direction:column;animation:rise .45s ease both}
+  .screen.active{display:flex}
+  @keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
 
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+  /* intro */
+  .emoji-hero{font-size:60px;text-align:center;margin:14px 0 6px;animation:bob 2.6s ease-in-out infinite}
+  @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-9px)}}
+  h1{
+    font-size:30px;line-height:1.2;font-weight:800;letter-spacing:-.03em;
+    text-align:center;margin-bottom:14px;
+  }
+  h1 .hl{color:var(--socar-deep)}
+  .lead{text-align:center;color:var(--muted);font-size:15px;line-height:1.6;margin-bottom:22px}
+  .animal-chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:26px}
+  .chip{
+    background:var(--paper-2);border-radius:999px;padding:7px 13px;
+    font-size:12.5px;font-weight:600;color:#3b4a5e;
+  }
+  .btn{
+    border:none;cursor:pointer;font-family:inherit;font-weight:700;
+    border-radius:16px;padding:16px 18px;font-size:16px;letter-spacing:-.01em;
+    transition:transform .12s ease, box-shadow .2s ease, background .2s ease;
+  }
+  .btn:active{transform:translateY(1px) scale(.99)}
+  .btn-primary{
+    background:linear-gradient(135deg,var(--socar),var(--socar-deep));
+    color:#fff;box-shadow:0 12px 26px -12px rgba(0,133,214,.8);width:100%;
+  }
+  .btn-ghost{background:var(--paper-2);color:var(--ink)}
+  .btn-dark{background:var(--ink);color:#fff;width:100%}
 
-  body {
-    font-family: 'Noto Sans KR', sans-serif;
-    background: var(--light);
-    color: var(--ink);
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
+  /* progress */
+  .qhead{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+  .qcount{font-size:13px;font-weight:700;color:var(--muted)}
+  .progress{height:7px;background:var(--paper-2);border-radius:999px;overflow:hidden;margin-bottom:26px}
+  .progress > i{display:block;height:100%;background:linear-gradient(90deg,var(--socar),var(--accent));width:0;border-radius:999px;transition:width .4s ease}
+  .qtext{font-size:22px;font-weight:800;line-height:1.35;letter-spacing:-.02em;margin-bottom:24px}
+  .options{display:flex;flex-direction:column;gap:11px}
+  .opt{
+    text-align:left;background:var(--card);border:1.5px solid var(--line);
+    border-radius:16px;padding:16px 16px;font-size:15.5px;font-weight:600;
+    color:var(--ink);cursor:pointer;font-family:inherit;line-height:1.4;
+    transition:border-color .15s ease, background .15s ease, transform .12s ease;
   }
+  .opt:hover{border-color:var(--socar);background:#f3fbff}
+  .opt:active{transform:scale(.99)}
+  .backbtn{background:none;border:none;font-size:22px;color:var(--muted);cursor:pointer;padding:4px 8px}
 
-  header {
-    padding: 20px 32px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    border-bottom: 1px solid var(--border);
-    background: var(--white);
-  }
+  /* result */
+  .res-emoji{font-size:72px;text-align:center;margin:6px 0;animation:pop .5s ease both}
+  @keyframes pop{from{transform:scale(.4);opacity:0}to{transform:scale(1);opacity:1}}
+  .res-kicker{text-align:center;color:var(--muted);font-size:13px;font-weight:700;letter-spacing:.04em;text-transform:uppercase}
+  .res-name{text-align:center;font-size:30px;font-weight:800;letter-spacing:-.02em;margin:4px 0 14px}
+  .res-name b{color:var(--socar-deep)}
+  .res-desc{background:var(--paper-2);border-radius:16px;padding:16px;font-size:14.5px;line-height:1.65;color:#37465a;margin-bottom:16px}
+  .res-block-title{font-size:13px;font-weight:800;color:var(--muted);margin:0 0 8px;letter-spacing:.02em}
+  .svc{display:flex;flex-direction:column;gap:8px;margin-bottom:18px}
+  .svc-item{display:flex;gap:10px;align-items:flex-start;font-size:14px;line-height:1.5}
+  .svc-item .ic{flex:0 0 auto;width:26px;height:26px;border-radius:8px;background:var(--socar);color:#fff;display:grid;place-items:center;font-size:14px}
+  .others{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:8px}
+  .other-pill{background:var(--paper-2);border-radius:999px;padding:6px 11px;font-size:12px;font-weight:600;color:#3b4a5e}
 
-  .logo {
-    font-family: 'Gowun Batang', serif;
-    font-size: 18px;
-    font-weight: 700;
-    letter-spacing: -0.02em;
-    color: var(--ink);
+  /* coupon */
+  .coupon{
+    position:relative;margin:6px 0 18px;border-radius:18px;overflow:hidden;
+    background:linear-gradient(120deg,var(--ink),#16335c);color:#fff;
+    padding:20px 20px;box-shadow:var(--shadow);
   }
+  .coupon::before,.coupon::after{
+    content:"";position:absolute;width:22px;height:22px;border-radius:50%;
+    background:var(--card);top:50%;transform:translateY(-50%);
+  }
+  .coupon::before{left:-11px}
+  .coupon::after{right:-11px}
+  .coupon .ctag{font-size:12px;font-weight:700;color:var(--socar);letter-spacing:.04em}
+  .coupon .camt{font-size:26px;font-weight:800;margin:2px 0 2px}
+  .coupon .ccode{font-size:12.5px;color:#b9c6d8;letter-spacing:.06em}
+  .coupon .clocked{font-size:13px;color:#c7d2e0;line-height:1.5}
+  .coupon.locked{background:repeating-linear-gradient(45deg,#2a3a52,#2a3a52 10px,#243349 10px,#243349 20px)}
 
-  .logo span {
-    color: var(--socar);
-  }
+  /* mission */
+  .mission{border:1px dashed var(--line);border-radius:16px;padding:14px 14px;margin-bottom:16px}
+  .mtitle{font-size:13px;font-weight:800;color:var(--muted);margin-bottom:10px}
+  .mrow{display:flex;align-items:center;gap:10px;font-size:14px;padding:6px 0}
+  .mcheck{width:22px;height:22px;border-radius:7px;border:2px solid var(--line);display:grid;place-items:center;font-size:13px;flex:0 0 auto;color:transparent}
+  .mrow.done .mcheck{background:var(--socar);border-color:var(--socar);color:#fff}
+  .mrow.done .mlabel{color:var(--ink)}
+  .mlabel{color:var(--muted);flex:1}
+  .mpts{font-size:12px;font-weight:800;color:var(--accent)}
 
-  .logo-dot {
-    width: 6px; height: 6px;
-    border-radius: 50%;
-    background: var(--socar);
-    display: inline-block;
-    margin-left: 2px;
-    vertical-align: middle;
-    margin-bottom: 3px;
+  /* share */
+  .share-title{font-size:13px;font-weight:800;color:var(--muted);margin:4px 0 10px;text-align:center}
+  .share-grid{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:16px}
+  .share-btn{
+    width:52px;height:52px;border-radius:15px;border:none;cursor:pointer;
+    display:grid;place-items:center;font-size:22px;font-weight:800;color:#fff;
+    transition:transform .12s ease, box-shadow .2s ease;
+    position:relative;
   }
-
-  main {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 40px 20px;
-  }
-
-  .card {
-    background: var(--white);
-    border-radius: var(--radius);
-    border: 1px solid var(--border);
-    width: 100%;
-    max-width: 540px;
-    overflow: hidden;
-    box-shadow: 0 2px 24px rgba(0,0,0,0.06);
-  }
-
-  /* ── INTRO ── */
-  #screen-intro { display: block; }
-  .intro-top {
-    padding: 48px 40px 32px;
-    text-align: center;
-    border-bottom: 1px solid var(--border);
-  }
-  .intro-animal { font-size: 56px; margin-bottom: 16px; }
-  .intro-title {
-    font-family: 'Gowun Batang', serif;
-    font-size: 26px;
-    font-weight: 700;
-    line-height: 1.35;
-    margin-bottom: 10px;
-    letter-spacing: -0.02em;
-  }
-  .intro-sub {
-    font-size: 14px;
-    color: var(--muted);
-    line-height: 1.7;
-  }
-  .intro-bottom {
-    padding: 24px 40px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 14px;
-  }
-  .type-pills {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    justify-content: center;
-  }
-  .pill {
-    font-size: 13px;
-    padding: 6px 14px;
-    border-radius: 999px;
-    border: 1px solid var(--border);
-    background: var(--light);
-    color: var(--ink);
-  }
-  .btn-start {
-    margin-top: 6px;
-    width: 100%;
-    padding: 16px;
-    background: var(--socar);
-    color: var(--white);
-    font-family: 'Noto Sans KR', sans-serif;
-    font-size: 15px;
-    font-weight: 500;
-    border: none;
-    border-radius: 12px;
-    cursor: pointer;
-    transition: background 0.15s;
-    letter-spacing: -0.01em;
-  }
-  .btn-start:hover { background: var(--socar-dark); }
-
-  /* ── QUIZ ── */
-  #screen-quiz { display: none; }
-  .quiz-top {
-    padding: 24px 32px 20px;
-    border-bottom: 1px solid var(--border);
-  }
-  .q-meta {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 14px;
-  }
-  .q-num { font-size: 12px; color: var(--muted); font-weight: 500; }
-  .q-dots { display: flex; gap: 6px; }
-  .q-dot {
-    width: 8px; height: 8px; border-radius: 50%;
-    background: var(--border);
-    transition: background 0.25s;
-  }
-  .q-dot.done { background: var(--socar); }
-  .prog-bar { height: 3px; background: var(--border); border-radius: 2px; overflow: hidden; }
-  .prog-fill {
-    height: 100%;
-    background: var(--socar);
-    border-radius: 2px;
-    transition: width 0.4s ease;
-  }
-  .q-text {
-    padding: 24px 32px 4px;
-    font-family: 'Gowun Batang', serif;
-    font-size: 19px;
-    font-weight: 700;
-    line-height: 1.5;
-    letter-spacing: -0.02em;
-  }
-  .opts {
-    padding: 16px 32px 28px;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-  }
-  .opt {
-    border: 1.5px solid var(--border);
-    border-radius: 12px;
-    padding: 14px 14px 12px;
-    background: var(--white);
-    cursor: pointer;
-    text-align: left;
-    transition: border-color 0.15s, background 0.15s, transform 0.1s;
-  }
-  .opt:hover { border-color: var(--socar); background: #f0fbff; }
-  .opt:active { transform: scale(0.98); }
-  .opt.sel {
-    border-color: var(--socar);
-    background: #e6f8ff;
-  }
-  .opt-label {
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--ink);
-    margin-bottom: 4px;
-    line-height: 1.4;
-  }
-  .opt.sel .opt-label { color: var(--socar-dark); }
-  .opt-sub {
-    font-size: 11px;
-    color: var(--muted);
-    line-height: 1.5;
-  }
-  .quiz-nav {
-    padding: 0 32px 28px;
-    display: flex;
-    gap: 10px;
-  }
-  .btn-prev {
-    padding: 13px 20px;
-    border: 1.5px solid var(--border);
-    border-radius: 12px;
-    background: var(--white);
-    color: var(--muted);
-    font-family: 'Noto Sans KR', sans-serif;
-    font-size: 14px;
-    cursor: pointer;
-    transition: border-color 0.15s;
-  }
-  .btn-prev:hover { border-color: #bbb; }
-  .btn-prev:disabled { opacity: 0.3; cursor: default; }
-  .btn-next {
-    flex: 1;
-    padding: 13px;
-    border: none;
-    border-radius: 12px;
-    background: var(--socar);
-    color: var(--white);
-    font-family: 'Noto Sans KR', sans-serif;
-    font-size: 14px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: background 0.15s, opacity 0.15s;
-  }
-  .btn-next:hover { background: var(--socar-dark); }
-  .btn-next:disabled { opacity: 0.3; cursor: default; }
-
-  /* ── RESULT ── */
-  #screen-result { display: none; }
-  .result-hero {
-    padding: 40px 40px 28px;
-    text-align: center;
-    border-bottom: 1px solid var(--border);
-    background: linear-gradient(to bottom, #f0fbff, var(--white));
-  }
-  .r-animal { font-size: 64px; margin-bottom: 12px; }
-  .r-tag {
-    display: inline-block;
-    font-size: 11px;
-    padding: 4px 12px;
-    border-radius: 999px;
-    background: var(--socar);
-    color: var(--white);
-    font-weight: 500;
-    margin-bottom: 10px;
-    letter-spacing: 0.02em;
-  }
-  .r-name {
-    font-family: 'Gowun Batang', serif;
-    font-size: 24px;
-    font-weight: 700;
-    margin-bottom: 6px;
-    letter-spacing: -0.02em;
-  }
-  .r-tagline {
-    font-size: 13px;
-    color: var(--muted);
-    line-height: 1.6;
-  }
-  .result-body { padding: 24px 32px 28px; }
-  .r-desc {
-    font-size: 14px;
-    color: var(--ink);
-    line-height: 1.8;
-    margin-bottom: 20px;
-    padding: 16px;
-    background: var(--light);
-    border-radius: 12px;
-  }
-  .r-sec-label {
-    font-size: 11px;
-    font-weight: 700;
-    color: var(--muted);
-    letter-spacing: 0.05em;
-    margin-bottom: 10px;
-  }
-  .r-tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 7px;
-    margin-bottom: 22px;
-  }
-  .r-service-tag {
-    font-size: 12px;
-    padding: 6px 12px;
-    border-radius: 999px;
-    border: 1.5px solid var(--socar);
-    color: var(--socar-dark);
-    background: #e6f8ff;
-    font-weight: 500;
-  }
-  .others-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
-    margin-bottom: 22px;
-  }
-  .other-card {
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 10px 12px;
-    background: var(--light);
-  }
-  .other-name { font-size: 12px; font-weight: 500; color: var(--ink); margin-bottom: 2px; }
-  .other-sub { font-size: 11px; color: var(--muted); line-height: 1.45; }
-  .result-btns { display: flex; gap: 10px; }
-  .btn-retry {
-    flex: 1;
-    padding: 14px;
-    border: 1.5px solid var(--border);
-    border-radius: 12px;
-    background: var(--white);
-    color: var(--ink);
-    font-family: 'Noto Sans KR', sans-serif;
-    font-size: 14px;
-    cursor: pointer;
-    transition: border-color 0.15s;
-  }
-  .btn-retry:hover { border-color: #bbb; }
-  .btn-share {
-    flex: 1;
-    padding: 14px;
-    border: none;
-    border-radius: 12px;
-    background: var(--socar);
-    color: var(--white);
-    font-family: 'Noto Sans KR', sans-serif;
-    font-size: 14px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: background 0.15s;
-  }
-  .btn-share:hover { background: var(--socar-dark); }
+  .share-btn:active{transform:translateY(1px) scale(.96)}
+  .share-btn span{font-size:11px}
+  .sb-kakao{background:#FEE500;color:#3c1e1e}
+  .sb-x{background:#000}
+  .sb-insta{background:linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888)}
+  .sb-fb{background:#1877F2}
+  .sb-link{background:var(--socar-deep)}
+  .share-wrap{position:relative}
+  .row-2{display:flex;gap:10px;margin-top:auto}
+  .row-2 .btn{flex:1}
 
   /* toast */
-  .toast {
-    position: fixed;
-    bottom: 32px;
-    left: 50%;
-    transform: translateX(-50%) translateY(20px);
-    background: #111;
-    color: #fff;
-    font-size: 13px;
-    padding: 10px 20px;
-    border-radius: 999px;
-    opacity: 0;
-    transition: opacity 0.3s, transform 0.3s;
-    pointer-events: none;
-    white-space: nowrap;
+  .toast{
+    position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);
+    background:var(--ink);color:#fff;padding:13px 20px;border-radius:14px;
+    font-size:14px;font-weight:600;box-shadow:var(--shadow);opacity:0;pointer-events:none;
+    transition:opacity .25s ease, transform .25s ease;z-index:50;text-align:center;max-width:90vw;
   }
-  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
-  footer {
-    text-align: center;
-    padding: 20px;
-    font-size: 12px;
-    color: #aaa;
+  /* reward burst */
+  .reward-flash{
+    position:fixed;inset:0;display:none;place-items:center;z-index:60;pointer-events:none;
   }
+  .reward-flash.show{display:grid}
+  .reward-card{
+    background:#fff;border-radius:20px;padding:24px 30px;text-align:center;
+    box-shadow:0 30px 60px -20px rgba(11,31,58,.6);animation:pop .4s ease both;pointer-events:none;
+  }
+  .reward-card .rp{font-size:34px;font-weight:800;color:var(--accent)}
+  .reward-card .rl{font-size:13px;color:var(--muted);font-weight:700;margin-top:2px}
 
-  @media (max-width: 480px) {
-    .intro-top { padding: 36px 24px 24px; }
-    .intro-bottom { padding: 20px 24px; }
-    .q-text { padding: 20px 24px 4px; font-size: 17px; }
-    .opts { padding: 14px 24px 24px; grid-template-columns: 1fr; }
-    .quiz-nav { padding: 0 24px 24px; }
-    .result-hero { padding: 32px 24px 22px; }
-    .result-body { padding: 20px 24px 24px; }
-  }
+  .foot{text-align:center;color:var(--muted);font-size:12px;margin-top:18px}
 </style>
 </head>
 <body>
+<div class="wrap">
+  <div class="topbar">
+    <div class="brand"><span class="dot"></span>SOCAR · 이동 취향 테스트</div>
+    <div class="points-pill">★ <b id="pointsTop">0</b> P</div>
+  </div>
 
-<header>
-  <div class="logo">쏘카<span class="logo-dot"></span> <span style="font-weight:300; font-family:'Noto Sans KR'; font-size:14px; color:#666; margin-left:4px;">이동 동물 테스트</span></div>
-</header>
-
-<main>
   <div class="card">
-
     <!-- INTRO -->
-    <div id="screen-intro">
-      <div class="intro-top">
-        <div class="intro-animal">🐾</div>
-        <div class="intro-title">나의 이동 동물은<br>무엇일까?</div>
-        <div class="intro-sub">4가지 질문으로 알아보는 나만의 이동 스타일.<br>당신의 이동 동물을 찾아드릴게요.</div>
+    <section class="screen active" id="screen-intro">
+      <div class="emoji-hero">🐾</div>
+      <h1>나의 <span class="hl">이동 동물</span>은<br>무엇일까?</h1>
+      <p class="lead">4가지 질문으로 알아보는 나만의 이동 스타일.<br>당신의 이동 동물을 찾아드릴게요.</p>
+      <div class="animal-chips">
+        <span class="chip">🐆 즉흥적인 치타</span>
+        <span class="chip">🐱 꼼꼼한 고양이</span>
+        <span class="chip">🦉 밤을 나는 부엉이</span>
+        <span class="chip">🐝 효율의 꿀벌</span>
+        <span class="chip">🐣 첫 발걸음 병아리</span>
+        <span class="chip">🐧 오손도손 펭귄</span>
       </div>
-      <div class="intro-bottom">
-        <div class="type-pills">
-          <span class="pill">🐆 즉흥적인 치타</span>
-          <span class="pill">🐱 꼼꼼한 고양이</span>
-          <span class="pill">🦉 밤을 나는 부엉이</span>
-          <span class="pill">🐝 효율의 꿀벌</span>
-          <span class="pill">🐣 첫 발걸음 병아리</span>
-          <span class="pill">🐧 오손도손 펭귄</span>
-        </div>
-        <button class="btn-start" onclick="startQuiz()">테스트 시작하기 →</button>
-      </div>
-    </div>
+      <button class="btn btn-primary" id="startBtn">테스트 시작하기 →</button>
+      <p class="foot" id="returnNote" style="display:none"></p>
+    </section>
 
     <!-- QUIZ -->
-    <div id="screen-quiz">
-      <div class="quiz-top">
-        <div class="q-meta">
-          <span class="q-num" id="q-num-txt">Q1 / 4</span>
-          <div class="q-dots" id="q-dots"></div>
-        </div>
-        <div class="prog-bar"><div class="prog-fill" id="prog"></div></div>
+    <section class="screen" id="screen-quiz">
+      <div class="qhead">
+        <button class="backbtn" id="backBtn">←</button>
+        <span class="qcount" id="qcount">Q1 / 4</span>
+        <span style="width:30px"></span>
       </div>
-      <div class="q-text" id="q-text"></div>
-      <div class="opts" id="opts"></div>
-      <div class="quiz-nav">
-        <button class="btn-prev" id="btn-prev" onclick="prev()">←</button>
-        <button class="btn-next" id="btn-next" onclick="next()" disabled>다음</button>
-      </div>
-    </div>
+      <div class="progress"><i id="progressBar"></i></div>
+      <div class="qtext" id="qtext"></div>
+      <div class="options" id="options"></div>
+    </section>
 
     <!-- RESULT -->
-    <div id="screen-result">
-      <div class="result-hero">
-        <div class="r-animal" id="r-animal"></div>
-        <div class="r-tag">나의 이동 동물</div>
-        <div class="r-name" id="r-name"></div>
-        <div class="r-tagline" id="r-tagline"></div>
-      </div>
-      <div class="result-body">
-        <div class="r-desc" id="r-desc"></div>
-        <div class="r-sec-label">이런 서비스가 딱이에요</div>
-        <div class="r-tags" id="r-tags"></div>
-        <div class="r-sec-label">다른 이동 동물들</div>
-        <div class="others-grid" id="r-others"></div>
-        <div class="result-btns">
-          <button class="btn-retry" onclick="restart()">다시 하기</button>
-          <button class="btn-share" onclick="share()">결과 공유하기</button>
+    <section class="screen" id="screen-result">
+      <div class="res-emoji" id="resEmoji">🐆</div>
+      <div class="res-kicker">나의 이동 동물</div>
+      <div class="res-name" id="resName"></div>
+      <div class="res-desc" id="resDesc"></div>
+
+      <div class="res-block-title">이런 서비스가 딱이에요</div>
+      <div class="svc" id="resSvc"></div>
+
+      <!-- coupon -->
+      <div class="res-block-title">나의 리워드</div>
+      <div class="coupon locked" id="coupon">
+        <div class="clocked" id="couponLocked">미션을 완료하면 쏘카 쿠폰이 열려요 🔒</div>
+        <div id="couponOpen" style="display:none">
+          <div class="ctag">SOCAR COUPON</div>
+          <div class="camt" id="couponAmt">3,000원 주행 크레딧</div>
+          <div class="ccode" id="couponCode"></div>
         </div>
       </div>
-    </div>
 
+      <!-- mission -->
+      <div class="mission">
+        <div class="mtitle">🎯 미션 퀘스트</div>
+        <div class="mrow done" id="mission-quiz">
+          <span class="mcheck">✓</span>
+          <span class="mlabel">테스트 완료하기</span>
+          <span class="mpts">+50P</span>
+        </div>
+        <div class="mrow" id="mission-share">
+          <span class="mcheck">✓</span>
+          <span class="mlabel">결과 SNS 공유하기</span>
+          <span class="mpts">+100P</span>
+        </div>
+        <div class="mrow" id="mission-coupon">
+          <span class="mcheck">✓</span>
+          <span class="mlabel">쿠폰 받기 (공유 시 자동 지급)</span>
+          <span class="mpts">쿠폰</span>
+        </div>
+      </div>
+
+      <!-- share -->
+      <div class="share-title">결과를 공유하고 +100P 받기</div>
+      <div class="share-grid">
+        <button class="share-btn sb-kakao" data-share="kakao" title="카카오톡">K</button>
+        <button class="share-btn sb-x" data-share="x" title="X">𝕏</button>
+        <button class="share-btn sb-insta" data-share="insta" title="인스타그램">📷</button>
+        <button class="share-btn sb-fb" data-share="fb" title="페이스북">f</button>
+        <button class="share-btn sb-link" data-share="link" title="링크복사">🔗</button>
+      </div>
+
+      <div class="res-block-title">다른 이동 동물들</div>
+      <div class="others" id="resOthers"></div>
+
+      <div class="row-2">
+        <button class="btn btn-ghost" id="retryBtn">다시 하기</button>
+        <button class="btn btn-dark" id="bookBtn">쏘카 예약하러 가기</button>
+      </div>
+    </section>
   </div>
-</main>
 
-<div class="toast" id="toast">링크가 복사됐어요!</div>
+  <p class="foot">쏘카 × 이동 취향 테스트 · 2025</p>
+</div>
 
-<footer>쏘카 × 이동 취향 테스트 · 2025</footer>
+<div class="toast" id="toast"></div>
+<div class="reward-flash" id="rewardFlash">
+  <div class="reward-card">
+    <div class="rp" id="rewardPts">+50P</div>
+    <div class="rl" id="rewardLabel">포인트 적립!</div>
+  </div>
+</div>
 
 <script>
-const Qs = [
+/* ---------- 안전한 저장소 (아티팩트 미리보기에서도 깨지지 않음) ---------- */
+const Store = (()=> {
+  let ok=false;
+  try{ localStorage.setItem("__t","1"); localStorage.removeItem("__t"); ok=true; }catch(e){ ok=false; }
+  const mem={};
+  return {
+    get(k){ try{ return ok? localStorage.getItem(k) : (mem[k]??null);}catch(e){return mem[k]??null;} },
+    set(k,v){ try{ ok? localStorage.setItem(k,v) : (mem[k]=v);}catch(e){mem[k]=v;} }
+  };
+})();
+
+const STATE = {
+  points: parseInt(Store.get("socar_points")||"0",10),
+  shared: false,
+  result: null,
+  qIndex: 0,
+  scores: {cheetah:0,cat:0,owl:0,bee:0,chick:0,penguin:0}
+};
+
+/* ---------- 데이터 ---------- */
+const QUESTIONS = [
   {
-    text: "금요일 밤 10시, 갑자기 어딘가 가고 싶어졌다. 나는?",
-    opts: [
-      { label: "일단 차 키 잡고 나간다", sub: "목적지는 달리면서 정해도 돼", tag: "즉흥" },
-      { label: "친구한테 연락부터 한다", sub: "혼자는 좀 허전하더라고", tag: "함께" },
-      { label: "KTX 첫차 예약해놓고 잔다", sub: "지금 가면 피곤하니까 내일 일찍", tag: "계획" },
-      { label: "그냥 집에 있는다", sub: "운전이 아직 좀 무섭긴 해", tag: "새싹" }
+    q:"갑자기 주말에 시간이 비었다! 당신의 선택은?",
+    a:[
+      {t:"일단 차 빌려서 어디로든 떠난다",s:{cheetah:2,owl:1}},
+      {t:"가고 싶었던 곳을 미리 정리해둔 리스트에서 고른다",s:{cat:2,bee:1}},
+      {t:"친구들에게 연락해 다 같이 움직인다",s:{penguin:2}},
+      {t:"가까운 곳을 천천히 둘러본다",s:{chick:2}}
     ]
   },
   {
-    text: "이동 중 가장 좋아하는 시간대는?",
-    opts: [
-      { label: "새벽 1~5시", sub: "텅 빈 도로, 가로등만 있는 그 느낌", tag: "야행" },
-      { label: "출근 직후 오전", sub: "일 끝내고 보상으로 어딘가 가는 기분", tag: "효율" },
-      { label: "오후 2~6시 황금 타임", sub: "날도 좋고 막히지도 않아서", tag: "즉흥" },
-      { label: "언제든, 같이 가면 돼", sub: "동행이 있으면 시간대는 별로 안 중요해", tag: "함께" }
+    q:"차를 빌릴 때 가장 신경 쓰는 건?",
+    a:[
+      {t:"빠르게 픽업해서 바로 출발",s:{cheetah:2}},
+      {t:"차량 상태·옵션을 꼼꼼히 확인",s:{cat:2}},
+      {t:"가성비, 할인 쿠폰부터 챙긴다",s:{bee:2}},
+      {t:"인원수와 짐에 딱 맞는 차종",s:{penguin:1,cat:1}}
     ]
   },
   {
-    text: "쏘카 앱 열었을 때 가장 먼저 하는 행동은?",
-    opts: [
-      { label: "지금 당장 탈 수 있는 차 찾기", sub: "최대한 빨리, 가장 가까운 거", tag: "즉흥" },
-      { label: "2주 뒤 여행 루트 미리 예약", sub: "미리 잡아둬야 마음이 편해", tag: "계획" },
-      { label: "KTX + 차 최저가 탐색", sub: "시간 대비 가성비가 제일 중요해", tag: "효율" },
-      { label: "초보 추천 코스 검색", sub: "혼자 나가도 괜찮은 코스 있나 봐", tag: "새싹" }
+    q:"주로 언제 이동하는 편인가요?",
+    a:[
+      {t:"한밤중 드라이브가 제맛",s:{owl:2}},
+      {t:"이른 아침 부지런하게",s:{bee:1,cat:1}},
+      {t:"그때그때 내키는 대로",s:{cheetah:2}},
+      {t:"아직 운전이 익숙하지 않아 낮에만",s:{chick:2}}
     ]
   },
   {
-    text: "이상적인 드라이브 뒤풀이는?",
-    opts: [
-      { label: "새벽 한강 or 야경 카페", sub: "밤이 되어야 진짜 드라이브지", tag: "야행" },
-      { label: "같이 간 사람들이랑 밥·술", sub: "이동보다 그 자리가 더 기억에 남아", tag: "함께" },
-      { label: "다음 여행 루트 바로 짜기", sub: "이번 복기하고 다음 거 계획", tag: "계획" },
-      { label: "빠른 귀가 후 샤워하고 취침", sub: "이동 자체가 목적, 쉬면 완성", tag: "효율" }
+    q:"이동 중 나의 모습은?",
+    a:[
+      {t:"내비보다 내 직감을 믿는다",s:{cheetah:1,owl:1}},
+      {t:"경로·주유·주차까지 다 계획됨",s:{cat:1,bee:1}},
+      {t:"다 같이 떠드느라 정신없음",s:{penguin:2}},
+      {t:"긴장한 채 안전운전 집중",s:{chick:2}}
     ]
   }
 ];
 
-const Types = {
-  즉흥: {
-    animal: "🐆", name: "즉흥적인 치타",
-    tagline: "생각나면 이미 출발. 목적지는 달리면서 정해도 돼.",
-    desc: "충동과 속도로 움직이는 타입. '언제 갈까?' 대신 '지금 가자!'가 먼저 나온다. 막차 놓친 새벽, 즉흥 바다, 헤어지고 한 드라이브 — 치타처럼 망설임 없이 출발하는 사람.",
-    tags: ["카셰어링 즉시 픽업", "당일 KTX 예약", "즉흥 1박 패키지"]
-  },
-  계획: {
-    animal: "🐱", name: "꼼꼼한 고양이",
-    tagline: "루트·숙소·동선까지. 준비된 여행이 더 설렌다.",
-    desc: "자기 페이스대로 준비를 마쳐야 출발 버튼을 누르는 타입. 고양이처럼 빈틈없고 신중하게. 스프레드시트 여행 계획표가 익숙하고, 예약 확정 알림이 올 때 가장 설레는 사람.",
-    tags: ["KTX + 카셰어링 패키지", "숙소 연계 예약", "루트 큐레이션"]
-  },
-  야행: {
-    animal: "🦉", name: "밤을 나는 부엉이",
-    tagline: "밤이 더 잘 보인다. 새벽 도로가 진짜 내 무대.",
-    desc: "낮보다 밤 드라이브가 좋고, 야경 보러 일부러 늦게 출발하는 타입. 텅 빈 새벽 도로, 야간 기차 불빛, 한강 새벽 — 남들이 잠들 때 가장 먼 곳에 있는 사람.",
-    tags: ["야간 드라이브 추천 루트", "심야 카셰어링", "새벽 KTX 첫차 예약"]
-  },
-  효율: {
-    animal: "🐝", name: "효율의 꿀벌",
-    tagline: "빠르고 정확하게. 이동에서 시간 낭비는 없어야 해.",
-    desc: "꽃에서 꽃으로 최적 경로를 찾는 꿀벌처럼, 출퇴근과 출장이 이동의 대부분. 감성보다 시간 절약이 먼저고, 앱 하나로 끊김 없이 이어지길 바라는 사람.",
-    tags: ["출퇴근 정기 이용권", "출장 원패스 패키지", "최단 루트 픽업존"]
-  },
-  새싹: {
-    animal: "🐣", name: "첫 발걸음 병아리",
-    tagline: "알에서 막 나왔어. 이동, 이제 시작해보려고.",
-    desc: "장롱면허거나 이제 막 운전 시작한 타입. 병아리처럼 세상에 막 발을 내디딘 단계. '혼자 괜찮을까?' 망설이는 그 마음 알아. 초보 추천 코스로 조금씩 익숙해지는 중.",
-    tags: ["초보 추천 드라이브 코스", "쏘카 연수 프로그램", "장롱면허 재입문 루트"]
-  },
-  함께: {
-    animal: "🐧", name: "오손도손 펭귄",
-    tagline: "이동보다 같이 가는 사람이 더 중요해.",
-    desc: "펭귄처럼 무리 지어야 진짜인 타입. 혼자 가는 여행보다 2인·4인 함께하는 드라이브가 좋다. 차 안에서 나누는 대화, 같은 걸 보는 순간 — 그 기억이 목적지보다 오래 남는 사람.",
-    tags: ["4인 SUV 추천", "커플 드라이브 루트", "친구와 1박 2일 패키지"]
-  }
+const ANIMALS = {
+  cheetah:{emoji:"🐆",name:"즉흥적인 치타",
+    desc:"마음이 동하면 곧장 출발하는 스피드형. 계획보다 직감을 믿고, 떠나고 싶을 때 바로 떠나는 자유로운 이동러예요.",
+    svc:["부름·즉시 예약으로 기다림 없이 출발","편도 서비스로 가는 길만 가볍게","24시간 이용으로 한밤 드라이브도 OK"]},
+  cat:{emoji:"🐱",name:"꼼꼼한 고양이",
+    desc:"떠나기 전 모든 걸 확인해야 안심하는 신중형. 차량 상태부터 경로까지 빈틈없이 챙기는 계획형 이동러예요.",
+    svc:["차량 사진·상태 확인 기능 적극 활용","예약 일정 미리 잡고 안심 출발","리뷰 높은 차고지 위주로 선택"]},
+  owl:{emoji:"🦉",name:"밤을 나는 부엉이",
+    desc:"고요한 밤의 이동을 사랑하는 야행성. 막히지 않는 도로와 한적한 분위기에서 가장 빛나는 이동러예요.",
+    svc:["심야 시간대 합리적 요금 활용","24시간 무인 픽업·반납","장거리 야간 드라이브 플랜"]},
+  bee:{emoji:"🐝",name:"효율의 꿀벌",
+    desc:"한 푼도 허투루 쓰지 않는 알뜰형. 쿠폰·할인·최단 경로까지 계산해 가장 효율적으로 움직이는 이동러예요.",
+    svc:["쿠폰·크레딧 적립 적극 활용","단시간 대여로 필요한 만큼만","연비 좋은 차종 우선 선택"]},
+  chick:{emoji:"🐣",name:"첫 발걸음 병아리",
+    desc:"이제 막 이동의 세계에 들어선 새내기. 천천히, 안전하게 익숙해지는 중인 성장형 이동러예요.",
+    svc:["초보자용 안전 가이드 확인","가까운 거리부터 짧게 연습","주차 쉬운 차종으로 시작"]},
+  penguin:{emoji:"🐧",name:"오손도손 펭귄",
+    desc:"혼자보다 함께가 좋은 동행형. 친구·가족과 다 같이 움직일 때 가장 즐거운 무리 이동러예요.",
+    svc:["인원수에 맞는 넉넉한 차종","함께 비용 나누는 더치 정산","넓은 트렁크로 짐도 넉넉히"]}
 };
 
-const priority = ["즉흥","야행","함께","새싹","계획","효율"];
-let answers = [], cur = 0;
-
-function show(id) {
-  ["screen-intro","screen-quiz","screen-result"].forEach(s =>
-    document.getElementById(s).style.display = s === id ? "block" : "none"
-  );
+/* ---------- 화면 전환 ---------- */
+function show(id){
+  document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+function refreshPoints(){ document.getElementById("pointsTop").textContent = STATE.points; }
+function addPoints(n,label){
+  STATE.points += n;
+  Store.set("socar_points", String(STATE.points));
+  refreshPoints();
+  const f=document.getElementById("rewardFlash");
+  document.getElementById("rewardPts").textContent = "+"+n+"P";
+  document.getElementById("rewardLabel").textContent = label||"포인트 적립!";
+  f.classList.add("show");
+  setTimeout(()=>f.classList.remove("show"),1100);
+}
+function toast(msg){
+  const t=document.getElementById("toast");
+  t.textContent=msg; t.classList.add("show");
+  clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove("show"),2200);
 }
 
-function startQuiz() {
-  answers = []; cur = 0;
-  show("screen-quiz");
-  renderQ();
-}
-
-function renderQ() {
-  const q = Qs[cur];
-  document.getElementById("q-num-txt").textContent = `Q${cur+1} / ${Qs.length}`;
-  document.getElementById("prog").style.width = ((cur+1)/Qs.length*100)+"%";
-
-  const dots = document.getElementById("q-dots");
-  dots.innerHTML = Qs.map((_,i) =>
-    `<div class="q-dot${i <= cur ? " done" : ""}"></div>`
-  ).join("");
-
-  document.getElementById("q-text").textContent = q.text;
-
-  const optsEl = document.getElementById("opts");
-  optsEl.innerHTML = "";
-  q.opts.forEach((o, i) => {
-    const btn = document.createElement("button");
-    btn.className = "opt" + (answers[cur] === i ? " sel" : "");
-    btn.innerHTML = `<div class="opt-label">${o.label}</div><div class="opt-sub">${o.sub}</div>`;
-    btn.onclick = () => {
-      answers[cur] = i;
-      document.querySelectorAll(".opt").forEach(b => b.classList.remove("sel"));
-      btn.classList.add("sel");
-      document.getElementById("btn-next").disabled = false;
-    };
-    optsEl.appendChild(btn);
+/* ---------- 퀴즈 ---------- */
+function renderQ(){
+  const q=QUESTIONS[STATE.qIndex];
+  document.getElementById("qcount").textContent=`Q${STATE.qIndex+1} / ${QUESTIONS.length}`;
+  document.getElementById("progressBar").style.width=((STATE.qIndex)/QUESTIONS.length*100)+"%";
+  document.getElementById("qtext").textContent=q.q;
+  const wrap=document.getElementById("options");
+  wrap.innerHTML="";
+  q.a.forEach(opt=>{
+    const b=document.createElement("button");
+    b.className="opt"; b.textContent=opt.t;
+    b.onclick=()=>pick(opt);
+    wrap.appendChild(b);
   });
-
-  document.getElementById("btn-prev").disabled = cur === 0;
-  const nb = document.getElementById("btn-next");
-  nb.textContent = cur === Qs.length - 1 ? "결과 보기 →" : "다음";
-  nb.disabled = answers[cur] === undefined;
 }
-
-function next() {
-  if (cur < Qs.length - 1) { cur++; renderQ(); }
-  else showResult();
+function pick(opt){
+  for(const k in opt.s){ STATE.scores[k]+=opt.s[k]; }
+  if(STATE.qIndex < QUESTIONS.length-1){ STATE.qIndex++; renderQ(); }
+  else finish();
 }
-
-function prev() {
-  if (cur > 0) { cur--; renderQ(); }
-}
-
-function showResult() {
-  const tags = answers.map((ai, qi) => Qs[qi].opts[ai].tag);
-  const counts = {};
-  tags.forEach(t => counts[t] = (counts[t]||0)+1);
-  const chosen = priority.find(t => counts[t] >= 2) || priority.find(t => counts[t]) || "즉흥";
-  const t = Types[chosen];
-
-  document.getElementById("r-animal").textContent = t.animal;
-  document.getElementById("r-name").textContent = t.name;
-  document.getElementById("r-tagline").textContent = t.tagline;
-  document.getElementById("r-desc").textContent = t.desc;
-  document.getElementById("r-tags").innerHTML = t.tags.map(x =>
-    `<span class="r-service-tag">${x}</span>`
-  ).join("");
-
-  const others = Object.entries(Types).filter(([k]) => k !== chosen).slice(0, 4);
-  document.getElementById("r-others").innerHTML = others.map(([,v]) =>
-    `<div class="other-card"><div class="other-name">${v.animal} ${v.name}</div><div class="other-sub">${v.tagline}</div></div>`
-  ).join("");
-
+function finish(){
+  document.getElementById("progressBar").style.width="100%";
+  let best=null,bestV=-1;
+  for(const k in STATE.scores){ if(STATE.scores[k]>bestV){bestV=STATE.scores[k];best=k;} }
+  STATE.result=best;
+  renderResult(best);
+  if(!Store.get("socar_quiz_done")){
+    Store.set("socar_quiz_done","1");
+    addPoints(50,"테스트 완료 보상!");
+  }
   show("screen-result");
 }
 
-function restart() {
-  answers = []; cur = 0;
-  show("screen-intro");
+/* ---------- 결과 ---------- */
+function renderResult(key){
+  const a=ANIMALS[key];
+  document.getElementById("resEmoji").textContent=a.emoji;
+  document.getElementById("resName").innerHTML=`나는 <b>${a.name}</b>`;
+  document.getElementById("resDesc").textContent=a.desc;
+  const svc=document.getElementById("resSvc"); svc.innerHTML="";
+  a.svc.forEach(s=>{
+    const d=document.createElement("div"); d.className="svc-item";
+    d.innerHTML=`<span class="ic">✓</span><span>${s}</span>`;
+    svc.appendChild(d);
+  });
+  const others=document.getElementById("resOthers"); others.innerHTML="";
+  Object.keys(ANIMALS).filter(k=>k!==key).forEach(k=>{
+    const p=document.createElement("span"); p.className="other-pill";
+    p.textContent=`${ANIMALS[k].emoji} ${ANIMALS[k].name}`;
+    others.appendChild(p);
+  });
+  syncMissions();
 }
 
-function share() {
-  const url = window.location.href;
-  if (navigator.clipboard) {
-    navigator.clipboard.writeText(url).then(() => showToast("링크가 복사됐어요!"));
-  } else {
-    showToast("주소창의 링크를 복사해 공유해보세요.");
+/* ---------- 미션 / 쿠폰 ---------- */
+function syncMissions(){
+  document.getElementById("mission-quiz").classList.add("done");
+  const shareRow=document.getElementById("mission-share");
+  const couponRow=document.getElementById("mission-coupon");
+  const coupon=document.getElementById("coupon");
+  const sharedSaved = Store.get("socar_shared")==="1" || STATE.shared;
+  if(sharedSaved){
+    STATE.shared=true;
+    shareRow.classList.add("done");
+    couponRow.classList.add("done");
+    coupon.classList.remove("locked");
+    document.getElementById("couponLocked").style.display="none";
+    document.getElementById("couponOpen").style.display="block";
+    let code=Store.get("socar_coupon_code");
+    if(!code){ code="SOCAR-"+Math.random().toString(36).slice(2,7).toUpperCase(); Store.set("socar_coupon_code",code);}
+    document.getElementById("couponCode").textContent="쿠폰코드 "+code;
   }
 }
 
-function showToast(msg) {
-  const t = document.getElementById("toast");
-  t.textContent = msg;
-  t.classList.add("show");
-  setTimeout(() => t.classList.remove("show"), 2200);
+/* ---------- 공유 ---------- */
+function shareText(){
+  const a = STATE.result? ANIMALS[STATE.result] : null;
+  return a ? `나의 이동 동물은 '${a.name}' ${a.emoji}! 너의 이동 동물도 찾아봐 👉` : "나의 이동 동물 찾기 — 쏘카";
 }
+function pageURL(){ return location.href.split("#")[0]; }
+
+function grantShareReward(){
+  if(Store.get("socar_shared")!=="1"){
+    Store.set("socar_shared","1");
+    STATE.shared=true;
+    addPoints(100,"공유 미션 완료! 쿠폰도 지급됐어요");
+    setTimeout(()=>{ syncMissions(); toast("🎟️ 쏘카 쿠폰이 지급됐어요!"); },1150);
+  } else {
+    syncMissions();
+  }
+}
+
+function doShare(type){
+  const url=encodeURIComponent(pageURL());
+  const text=encodeURIComponent(shareText());
+  let link=null;
+  if(type==="x"){ link=`https://twitter.com/intent/tweet?text=${text}&url=${url}`; }
+  else if(type==="fb"){ link=`https://www.facebook.com/sharer/sharer.php?u=${url}`; }
+  else if(type==="kakao"){
+    // 카카오 SDK 키 연동 전이므로 링크 복사로 대체 (배포 시 Kakao.Share.sendDefault 로 교체)
+    copyLink("카카오톡 공유용 링크가 복사됐어요. 붙여넣어 보내세요!");
+    grantShareReward();
+    return;
+  }
+  else if(type==="insta"){
+    // 인스타는 웹 직접 공유 API가 없어 링크 복사 안내
+    copyLink("인스타 스토리/DM에 붙여넣을 링크가 복사됐어요!");
+    grantShareReward();
+    return;
+  }
+  else if(type==="link"){
+    copyLink("링크가 복사됐어요!");
+    grantShareReward();
+    return;
+  }
+
+  // 네이티브 공유가 가능하면 우선 사용
+  if(navigator.share && (type==="x"||type==="fb")){
+    navigator.share({title:"쏘카 이동 동물 테스트", text:shareText(), url:pageURL()})
+      .then(()=>grantShareReward()).catch(()=>{ window.open(link,"_blank"); grantShareReward(); });
+  } else {
+    window.open(link,"_blank","noopener");
+    grantShareReward();
+  }
+}
+function copyLink(msg){
+  const full = pageURL();
+  const payload = shareText()+" "+full;
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(payload).then(()=>toast(msg)).catch(()=>fallbackCopy(payload,msg));
+  } else fallbackCopy(payload,msg);
+}
+function fallbackCopy(txt,msg){
+  const ta=document.createElement("textarea"); ta.value=txt;
+  ta.style.position="fixed"; ta.style.opacity="0"; document.body.appendChild(ta);
+  ta.select();
+  try{ document.execCommand("copy"); toast(msg); }catch(e){ toast("복사에 실패했어요. 링크를 직접 복사해 주세요."); }
+  document.body.removeChild(ta);
+}
+
+/* ---------- 초기화 / 이벤트 ---------- */
+function startQuiz(){
+  STATE.qIndex=0;
+  STATE.scores={cheetah:0,cat:0,owl:0,bee:0,chick:0,penguin:0};
+  renderQ();
+  show("screen-quiz");
+}
+function init(){
+  refreshPoints();
+  if(STATE.points>0){
+    const note=document.getElementById("returnNote");
+    note.style.display="block";
+    note.textContent=`다시 오셨네요! 현재 ${STATE.points}P 보유 중이에요.`;
+  }
+  document.getElementById("startBtn").onclick=startQuiz;
+  document.getElementById("retryBtn").onclick=startQuiz;
+  document.getElementById("bookBtn").onclick=()=>window.open("https://www.socar.kr","_blank","noopener");
+  document.getElementById("backBtn").onclick=()=>{
+    if(STATE.qIndex>0){ STATE.qIndex--; renderQ(); } else show("screen-intro");
+  };
+  document.querySelectorAll(".share-btn").forEach(b=>{
+    b.onclick=()=>doShare(b.dataset.share);
+  });
+}
+init();
 </script>
 </body>
 </html>
